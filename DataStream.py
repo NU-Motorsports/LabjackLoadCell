@@ -11,6 +11,8 @@ MAX_REQUESTS = 500
 # SCAN_FREQUENCY is the scan frequency of stream mode in Hz
 SCAN_FREQUENCY = 5000
 
+#output data
+dataOut = ['Time','Voltage']
 
 ###############################################################################
 # UE9
@@ -45,7 +47,7 @@ try:
             calOffset += sum(r["AIN0"])/len(r["AIN0"])
         calOffset = calOffset/100
         break
-
+    
     for r = d.streamData():
         if r is not None:
             if r["errors"] != 0:
@@ -62,6 +64,11 @@ try:
                 # Comment out these prints and do something with r
                 print("Average of %s AIN0 readings:, %s" %
                       (len(r["AIN0"]), sum(r["AIN0"])/len(r["AIN0"])))
+
+                #Current Time
+                now = datetime.now() - start
+                dataOuput.append([now,sum(r["AIN0"])/len(r["AIN0"])])
+                
     
                 dataCount += 1
                 packetCount += r['numPackets']

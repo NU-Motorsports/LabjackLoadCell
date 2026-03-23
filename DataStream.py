@@ -39,37 +39,37 @@ try:
     missed = 0
     dataCount = 0
     packetCount = 0
-    r = d.streamData() 
-    for i in 10:
-        
-    while True:
+    calOffset = 0
+    for r = d.streamData():
+        if calOffset == 0:    
+            calOffset += sum(r["AIN0"])/len(r["AIN0"])      
+    for r = d.streamData():
         if r is not None:
-            # Our stop condition
-#           if dataCount >= MAX_REQUESTS:
-#                break
-
-            if r["errors"] != 0:
-                print("Errors counted: %s ; %s" % (r["errors"], datetime.now()))
-
-            if r["numPackets"] != d.packetsPerRequest:
-                print("----- UNDERFLOW : %s ; %s" %
-                      (r["numPackets"], datetime.now()))
-
-            if r["missed"] != 0:
-                missed += r['missed']
-                print("+++ Missed %s" % r["missed"])
-
-            # Comment out these prints and do something with r
-            print("Average of %s AIN0 readings:, %s" %
-                  (len(r["AIN0"]), sum(r["AIN0"])/len(r["AIN0"])))
-
-            dataCount += 1
-            packetCount += r['numPackets']
-        else:
-            # Got no data back from our read.
-            # This only happens if your stream isn't faster than the USB read
-            # timeout, ~1 sec.
-            print("No data ; %s" % datetime.now())
+            #Set ou cal offset based off 100 packets
+         
+            else:
+                if r["errors"] != 0:
+                    print("Errors counted: %s ; %s" % (r["errors"], datetime.now()))
+    
+                if r["numPackets"] != d.packetsPerRequest:
+                    print("----- UNDERFLOW : %s ; %s" %
+                          (r["numPackets"], datetime.now()))
+    
+                if r["missed"] != 0:
+                    missed += r['missed']
+                    print("+++ Missed %s" % r["missed"])
+    
+                # Comment out these prints and do something with r
+                print("Average of %s AIN0 readings:, %s" %
+                      (len(r["AIN0"]), sum(r["AIN0"])/len(r["AIN0"])))
+    
+                dataCount += 1
+                packetCount += r['numPackets']
+            else:
+                # Got no data back from our read.
+                # This only happens if your stream isn't faster than the USB read
+                # timeout, ~1 sec.
+                print("No data ; %s" % datetime.now())
 except:
     print("".join(i for i in traceback.format_exc()))
 

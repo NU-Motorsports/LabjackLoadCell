@@ -43,6 +43,7 @@ try:
     for r = d.streamData():    
         for i in 100:
             calOffset += sum(r["AIN0"])/len(r["AIN0"])
+        calOffset = calOffset/100
         break
 
     for r = d.streamData():

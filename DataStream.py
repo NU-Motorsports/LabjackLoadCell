@@ -4,6 +4,7 @@ from datetime import datetime
 
 import ue9
 
+signal.signal(signal.SIGTERM, saveExit)
 
 # MAX_REQUESTS is the number of packets to be read.
 MAX_REQUESTS = 500
@@ -38,12 +39,14 @@ try:
     missed = 0
     dataCount = 0
     packetCount = 0
-
-    for r in d.streamData():
+    r = d.streamData() 
+    for i in 10:
+        
+    while True:
         if r is not None:
             # Our stop condition
-            if dataCount >= MAX_REQUESTS:
-                break
+#           if dataCount >= MAX_REQUESTS:
+#                break
 
             if r["errors"] != 0:
                 print("Errors counted: %s ; %s" % (r["errors"], datetime.now()))
@@ -69,7 +72,9 @@ try:
             print("No data ; %s" % datetime.now())
 except:
     print("".join(i for i in traceback.format_exc()))
-finally:
+
+def saveExit():
+
     stop = datetime.now()
     d.streamStop()
     print("Stream stopped.\n")
@@ -91,3 +96,5 @@ finally:
           (scanTotal, runTime, float(scanTotal)/runTime))
     print("Timed Sample Rate = %s samples / %s seconds = %s Hz" %
           (sampleTotal, runTime, float(sampleTotal)/runTime)
+
+

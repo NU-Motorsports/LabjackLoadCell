@@ -40,25 +40,24 @@ try:
     dataCount = 0
     packetCount = 0
     calOffset = 0
-    for r = d.streamData():
-        if calOffset == 0:    
-            calOffset += sum(r["AIN0"])/len(r["AIN0"])      
+    for r = d.streamData():    
+        for i in 100:
+            calOffset += sum(r["AIN0"])/len(r["AIN0"])
+        break
+
     for r = d.streamData():
         if r is not None:
-            #Set ou cal offset based off 100 packets
-         
-            else:
-                if r["errors"] != 0:
+            if r["errors"] != 0:
                     print("Errors counted: %s ; %s" % (r["errors"], datetime.now()))
     
-                if r["numPackets"] != d.packetsPerRequest:
+            if r["numPackets"] != d.packetsPerRequest:
                     print("----- UNDERFLOW : %s ; %s" %
                           (r["numPackets"], datetime.now()))
     
-                if r["missed"] != 0:
+            if r["missed"] != 0:
                     missed += r['missed']
                     print("+++ Missed %s" % r["missed"])
-    
+
                 # Comment out these prints and do something with r
                 print("Average of %s AIN0 readings:, %s" %
                       (len(r["AIN0"]), sum(r["AIN0"])/len(r["AIN0"])))

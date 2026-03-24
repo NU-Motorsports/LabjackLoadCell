@@ -43,15 +43,14 @@ try:
     dataCount = 0
     packetCount = 0
     calOffset = 0
-    for r = d.streamData():    
-        for i in 100:
-            calOffset += sum(r["AIN0"])/len(r["AIN0"])
-        calOffset = calOffset/100
-        break
-
+    for i in 100:    
+        r = d.streamData()
+        calOffset += sum(r["AIN0"])/len(r["AIN0"])
+        
+    calOffset = calOffset/100
     dataOut = (['Cal Offset', calOffset],['Time','Voltage'])
 
-    for r = d.streamData():
+    for r in d.streamData():
         if r is not None:
             # if r["errors"] != 0:
             #         print("Errors counted: %s ; %s" % (r["errors"], datetime.now()))

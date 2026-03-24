@@ -5,6 +5,7 @@ from datetime import datetime
 import ue9
 
 signal.signal(signal.SIGTERM, saveExit)
+signal.signal(signal.SIGINT, saveExit)
 
 # MAX_REQUESTS is the number of packets to be read.
 MAX_REQUESTS = 500
@@ -12,7 +13,7 @@ MAX_REQUESTS = 500
 SCAN_FREQUENCY = 5000
 
 #output data
-dataOut = ['Time','Voltage']
+
 
 ###############################################################################
 # UE9
@@ -47,28 +48,29 @@ try:
             calOffset += sum(r["AIN0"])/len(r["AIN0"])
         calOffset = calOffset/100
         break
-    
+
+    dataOut = (['Cal Offset', calOffset],['Time','Voltage'])
+
     for r = d.streamData():
         if r is not None:
-            if r["errors"] != 0:
-                    print("Errors counted: %s ; %s" % (r["errors"], datetime.now()))
+            # if r["errors"] != 0:
+            #         print("Errors counted: %s ; %s" % (r["errors"], datetime.now()))
     
-            if r["numPackets"] != d.packetsPerRequest:
-                    print("----- UNDERFLOW : %s ; %s" %
-                          (r["numPackets"], datetime.now()))
+            # if r["numPackets"] != d.packetsPerRequest:
+            #         print("----- UNDERFLOW : %s ; %s" %
+            #               (r["numPackets"], datetime.now()))
     
-            if r["missed"] != 0:
-                    missed += r['missed']
-                    print("+++ Missed %s" % r["missed"])
+            # if r["missed"] != 0:
+            #         missed += r['missed']
+            #         print("+++ Missed %s" % r["missed"])
 
-                # Comment out these prints and do something with r
-                print("Average of %s AIN0 readings:, %s" %
-                      (len(r["AIN0"]), sum(r["AIN0"])/len(r["AIN0"])))
+            #     # Comment out these prints and do something with r
+            #     print("Average of %s AIN0 readings:, %s" %
+            #           (len(r["AIN0"]), sum(r["AIN0"])/len(r["AIN0"])))
 
                 #Current Time
                 now = datetime.now() - start
                 dataOuput.append([now,sum(r["AIN0"])/len(r["AIN0"])])
-                
     
                 dataCount += 1
                 packetCount += r['numPackets']
@@ -81,7 +83,6 @@ except:
     print("".join(i for i in traceback.format_exc()))
 
 def saveExit():
-
     stop = datetime.now()
     d.streamStop()
     print("Stream stopped.\n")
@@ -103,5 +104,6 @@ def saveExit():
           (scanTotal, runTime, float(scanTotal)/runTime))
     print("Timed Sample Rate = %s samples / %s seconds = %s Hz" %
           (sampleTotal, runTime, float(sampleTotal)/runTime)
+    print(dataOuput)
 
 

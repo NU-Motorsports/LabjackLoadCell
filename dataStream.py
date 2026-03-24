@@ -7,17 +7,13 @@ import ue9
 def saveExit():
     stop = datetime.now()
     d.streamStop()
-    print("Stream stopped.\n")
+    
     d.close()
 
     sampleTotal = packetCount * d.streamSamplesPerPacket
 
     scanTotal = sampleTotal / 1  # sampleTotal / NumChannels
-    print("%s requests with %s packets per request with %s samples per packet = %s samples total." %
-          (dataCount, (float(packetCount)/dataCount), d.streamSamplesPerPacket, sampleTotal))
-    print("%s samples were lost due to errors." % missed)
     sampleTotal -= missed
-    print("Adjusted number of samples = %s" % sampleTotal)
 
     runTime = (stop-start).seconds + float((stop-start).microseconds)/1000000
     print("The experiment took %s seconds." % runTime)
@@ -29,8 +25,8 @@ def saveExit():
     print(dataOuput)
 
 
-signal.signal(signal.SIGTERM, saveExit)
-signal.signal(signal.SIGINT, saveExit)
+signal.signal(signal.SIGTERM, saveExit())
+signal.signal(signal.SIGINT, saveExit())
 
 # MAX_REQUESTS is the number of packets to be read.
 MAX_REQUESTS = 500
@@ -58,13 +54,10 @@ print("Configuring UE9 stream")
 
 d.streamConfig(NumChannels=1, ChannelNumbers=[0], ChannelOptions=[1], SettlingTime=0, Resolution=13, ScanFrequency=SCAN_FREQUENCY)
 
-#makes sure stream is stopped before starting
-d.streamStop()
-
 try:
+    start = datetime.now()
     print("Start stream")
     d.streamStart()
-    start = datetime.now()
     print("Start time is %s" % start)
 
     missed = 0

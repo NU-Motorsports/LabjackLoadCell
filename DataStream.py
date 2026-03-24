@@ -4,6 +4,31 @@ from datetime import datetime
 import signal
 import ue9
 
+def saveExit():
+    stop = datetime.now()
+    d.streamStop()
+    print("Stream stopped.\n")
+    d.close()
+
+    sampleTotal = packetCount * d.streamSamplesPerPacket
+
+    scanTotal = sampleTotal / 1  # sampleTotal / NumChannels
+    print("%s requests with %s packets per request with %s samples per packet = %s samples total." %
+          (dataCount, (float(packetCount)/dataCount), d.streamSamplesPerPacket, sampleTotal))
+    print("%s samples were lost due to errors." % missed)
+    sampleTotal -= missed
+    print("Adjusted number of samples = %s" % sampleTotal)
+
+    runTime = (stop-start).seconds + float((stop-start).microseconds)/1000000
+    print("The experiment took %s seconds." % runTime)
+    print("Actual Scan Rate = %s Hz" % SCAN_FREQUENCY)
+    print("Timed Scan Rate = %s scans / %s seconds = %s Hz" %
+          (scanTotal, runTime, float(scanTotal)/runTime))
+    print("Timed Sample Rate = %s samples / %s seconds = %s Hz" %
+          (sampleTotal, runTime, float(sampleTotal)/runTime))
+    print(dataOuput)
+
+
 signal.signal(signal.SIGTERM, saveExit)
 signal.signal(signal.SIGINT, saveExit)
 
@@ -81,28 +106,5 @@ try:
 except:
     print("".join(i for i in traceback.format_exc()))
 
-def saveExit():
-    stop = datetime.now()
-    d.streamStop()
-    print("Stream stopped.\n")
-    d.close()
-
-    sampleTotal = packetCount * d.streamSamplesPerPacket
-
-    scanTotal = sampleTotal / 1  # sampleTotal / NumChannels
-    print("%s requests with %s packets per request with %s samples per packet = %s samples total." %
-          (dataCount, (float(packetCount)/dataCount), d.streamSamplesPerPacket, sampleTotal))
-    print("%s samples were lost due to errors." % missed)
-    sampleTotal -= missed
-    print("Adjusted number of samples = %s" % sampleTotal)
-
-    runTime = (stop-start).seconds + float((stop-start).microseconds)/1000000
-    print("The experiment took %s seconds." % runTime)
-    print("Actual Scan Rate = %s Hz" % SCAN_FREQUENCY)
-    print("Timed Scan Rate = %s scans / %s seconds = %s Hz" %
-          (scanTotal, runTime, float(scanTotal)/runTime))
-    print("Timed Sample Rate = %s samples / %s seconds = %s Hz" %
-          (sampleTotal, runTime, float(sampleTotal)/runTime))
-    print(dataOuput)
 
 

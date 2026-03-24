@@ -73,10 +73,10 @@ try:
     
                 dataCount += 1
                 packetCount += r['numPackets']
-            else:
-                # Got no data back from our read.
-                # This only happens if your stream isn't faster than the USB read
-                # timeout, ~1 sec.
+        else:
+            # Got no data back from our read.
+            # This only happens if your stream isn't faster than the USB read
+            # timeout, ~1 sec.
                 print("No data ; %s" % datetime.now())
 except:
     print("".join(i for i in traceback.format_exc()))

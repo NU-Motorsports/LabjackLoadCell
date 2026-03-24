@@ -74,14 +74,20 @@ try:
 
     i = 0
     for r in d.streamData()):
-        if i == 100:
-            calOffset = calOffset/100
-            dataOut = (['Cal Offset', calOffset],['Time','Voltage'])
-            break
+        if r is not None:
+            if i == 100:
+                calOffset = calOffset/100
+                dataOut = (['Cal Offset', calOffset],['Time','Voltage'])
+                break
+            else:
+                i += 1
+                calOffset += sum(r["AIN0"])/len(r["AIN0"])
         else:
-            i += 1
-            calOffset += sum(r["AIN0"])/len(r["AIN0"])
-        
+            # Got no data back from our read.
+            # This only happens if your stream isn't faster than the USB read
+            # timeout, ~1 sec.
+                print("No data ; %s" % datetime.now())
+            
 
 
     for r in d.streamData():

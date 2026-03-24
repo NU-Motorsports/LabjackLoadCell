@@ -1,7 +1,7 @@
 import sys
 import traceback
 from datetime import datetime
-
+import signal
 import ue9
 
 signal.signal(signal.SIGTERM, saveExit)
@@ -102,7 +102,7 @@ def saveExit():
     print("Timed Scan Rate = %s scans / %s seconds = %s Hz" %
           (scanTotal, runTime, float(scanTotal)/runTime))
     print("Timed Sample Rate = %s samples / %s seconds = %s Hz" %
-          (sampleTotal, runTime, float(sampleTotal)/runTime)
+          (sampleTotal, runTime, float(sampleTotal)/runTime))
     print(dataOuput)
 
 

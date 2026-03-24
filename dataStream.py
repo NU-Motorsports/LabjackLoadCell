@@ -58,6 +58,9 @@ print("Configuring UE9 stream")
 
 d.streamConfig(NumChannels=1, ChannelNumbers=[0], ChannelOptions=[1], SettlingTime=0, Resolution=13, ScanFrequency=SCAN_FREQUENCY)
 
+#makes sure stream is stopped before starting
+d.streamStop()
+
 try:
     print("Start stream")
     d.streamStart()
@@ -68,12 +71,18 @@ try:
     dataCount = 0
     packetCount = 0
     calOffset = 0
-    for i in 100:    
-        r = d.streamData()
-        calOffset += sum(r["AIN0"])/len(r["AIN0"])
+
+    i = 0
+    for r in d.streamData()):
+        if i == 100:
+            calOffset = calOffset/100
+            dataOut = (['Cal Offset', calOffset],['Time','Voltage'])
+            break
+        else:
+            i += 1
+            calOffset += sum(r["AIN0"])/len(r["AIN0"])
         
-    calOffset = calOffset/100
-    dataOut = (['Cal Offset', calOffset],['Time','Voltage'])
+
 
     for r in d.streamData():
         if r is not None:

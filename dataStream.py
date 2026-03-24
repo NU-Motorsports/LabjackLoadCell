@@ -73,7 +73,7 @@ try:
     calOffset = 0
 
     i = 0
-    for r in d.streamData()):
+    for r in d.streamData():
         if r is not None:
             if i == 100:
                 calOffset = calOffset/100

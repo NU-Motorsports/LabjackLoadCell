@@ -71,7 +71,7 @@ def calibrateLoadCell():
             # timeout, ~1 sec.
                 print("No data ; %s" % datetime.now())
         print("What was your standards weight in pounds?")
-        while true:
+        while True:
             try:
                 standard = float(input())
                 break
@@ -80,6 +80,7 @@ def calibrateLoadCell():
         pounds = loadCellData/standard
     except:
         print("".join(i for i in traceback.format_exc()))
+    print("What would you like to name this calibration?")
     
 
 def createTestConfig():
@@ -108,7 +109,14 @@ def saveExit(a,b):
 signal.signal(signal.SIGTERM, saveExit)
 signal.signal(signal.SIGINT, saveExit)
 
-
-
+while True:
+    print("Enter 0 if you would like to calibrate a load cell and 1 if you would like to create a test config file")
+    while True:
+        try:
+            mode = int(input())
+            break
+        except:
+    if mode == 0:
+        calibrateLoadCell
 
 

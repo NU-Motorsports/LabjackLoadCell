@@ -84,6 +84,7 @@ def calibrateLoadCell():
     
 
 def createTestConfig():
+    zl
     
 #configs UE9 device only written as a function since I needed to catch the exception of the labjack device not being properly closed on a previous run. And needed to close and reopen the port
 def ue9Config():
@@ -114,9 +115,14 @@ while True:
     while True:
         try:
             mode = int(input())
-            break
+            if mode == 0 || mode == 1:
+                break
+            else:
+                print("Enter only either 0 or 1")
         except:
+            print("Enter only either 0 or 1")
     if mode == 0:
-        calibrateLoadCell
-
+        calibrateLoadCell()
+    else if mode == 1:
+        createTestConfig()
 

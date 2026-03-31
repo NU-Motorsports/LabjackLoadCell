@@ -94,12 +94,24 @@ def calibrateLoadCell():
 
     with open(calibrations.yaml", "w") as f:
         yaml.safe_dump(calibrations, f, sort_keys=False)
-    print("Here is an updated list of calibration keys")
+    print("Here is an updated list of calibration keys and values")
     print(calibrations)
-    
+    d.streamStop()
+    d.close()
 
 def createTestConfig():
-    
+    print("What folder would you like to save the file to?(Do not include slashes)")
+    directory = input()
+
+    with open("calibrations.yaml", "r") as f:
+        calibrations = yaml.safe_load(f) or {}
+
+    print(calibrations)
+    print("What load cell will you be using? (The key must be present in the above dictionary)")
+    calibrationName = input()
+    configFile = {"Directory":directory, "CalibrationName":calibrationName}
+    with open("configFile.yaml, "w") as f:
+            yaml.safe_dump(configFile, f, sort_keys = False)
     
 #configs UE9 device only written as a function since I needed to catch the exception of the labjack device not being properly closed on a previous run. And needed to close and reopen the port
 def ue9Config():
@@ -111,7 +123,7 @@ def ue9Config():
 #This is the exit/cleanup program. closes the port to the labjack and gets rid of that object. additonally creates a header for the csv and then runs the save function.
 def saveExit(a,b):
     print("Cleaning Up")
-    if d is not none
+    if d.streamStarted:
         d.streamStop()
         d.close()
 
@@ -140,4 +152,5 @@ while True:
         calibrateLoadCell()
     else if mode == 1:
         createTestConfig()
-
+    print("Press enter if you would like to do another action or press control C if you are done")
+    

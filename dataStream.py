@@ -1,4 +1,4 @@
-
+import os
 import sys
 import traceback
 from datetime import datetime
@@ -23,19 +23,26 @@ loadCellCalibration = 1
 
 def writeConfigFile(path):
     config = {"Directory": directory, "Calibration" : loadCellCalibration, "CalibrationName" : calibrationName}
+    print(config)
+    
     with open(path + ".yaml", "w") as f:
-        yaml.dump(data,f)
+        yaml.dump(config,f)
 
 def loadYAMLConfig(configFile = "configFile.yaml"):
+    global directory
+    global loadCellCalibration
+    global calibrationName
+
     with open(configFile, "r") as f:
         config = yaml.safe_load(f)
 
     directory = config["Directory"]
-    calibrationName = config["CalibrationName"]
-#Make this calibration list
-    with open("Calibrations.yaml", "r") as f:
-        loadCellCalibration = yaml.safe_load(f)["CalibrationName"]
 
+    calibrationName = config["CalibrationName"]
+
+#Make this calibration list
+    with open("calibrations.yaml", "r") as f:
+        loadCellCalibration = yaml.safe_load(f)[calibrationName]
 
 #Writes a matrix of size 3 by number of data points to a CSV
 #NOTE: The CSV folder location should be changed depending on when you and why you are taking data. For example: it was originally written to save to tierodData because we were looking at steering rack forces.
@@ -44,8 +51,10 @@ def saveData(data, header, stoptime):
     try:
         os.mkdir(directory)
         print("Writing data to" + name)
-    except FilesExistsError:
+    except FileExistsError:
         print("Directory already exists. Writing data to" + name)
+    except:
+        print("Error directory unable to be made. Writing to /home/pi")
 
     try:
         with open(name + ".csv", "w", newline="") as f:
@@ -61,6 +70,7 @@ def saveData(data, header, stoptime):
             writer.writerow(header)
             writer.writerows(data)
         writeConfigFile(stoptime)
+
 
 #configs UE9 device only written as a function since I needed to catch the exception of the labjack device not being properly closed on a previous run. And needed to close and reopen the port
 def ue9Config():
@@ -97,11 +107,9 @@ def saveExit(a,b):
 
 
 #################################################################################################################################################################################################################
-
+#loads config file
 loadYAMLConfig()
-
 #Device and code set up starts here.
-
 d = ue9.UE9()
 
 

@@ -1,4 +1,4 @@
-
+import signal
 import sys
 import traceback
 import yaml
@@ -6,23 +6,25 @@ import ue9
 
 
 ###########################################################All Functions Defined Here##############################################################################################################
-def calibrateLoadCell():
+def calibrateLoadCell(d):
     #Device and code set up starts here.
+
 
     # MAX_REQUESTS is the number of packets to be read.
     MAX_REQUESTS = 500
     # SCAN_FREQUENCY is the scan frequency of stream mode in Hz
     SCAN_FREQUENCY = 5000
-    ue9Config()
+
+    ue9Config(SCAN_FREQUENCY)
 
     #Flushes data from previous stream
     d.streamClearData()
     try:
-  
+
     #Catches if port was not properly closed previously
         try:
             d.streamStart()
-        except ue9.LowlevelErrorException:
+        except:
             d.streamStop()
             d.close()
             d = ue9.UE9()
@@ -57,11 +59,11 @@ def calibrateLoadCell():
         for r in d.streamData():
             if r is not None:
                 if i == 100:
-                    loadCellData = LoadCellData/100
+                    loadCellData = loadCellData/100
                     break
                 else:
                     i += 1
-                    loadCellData += sum(r["AIN0"])/len(r["AIN0"])
+                    loadCellData += (sum(r["AIN0"])/len(r["AIN0"]))-calOffset
         else:
             # Got no data back from our read.
             # This only happens if your stream isn't faster than the USB read
@@ -72,9 +74,10 @@ def calibrateLoadCell():
             try:
                 standard = float(input())
                 break
-            except:
+            except ValueError:
                 print("Please enter only numbers? (Your number can include decimal points)")
-        pounds = loadCellData/standard
+        print(str(loadCellData) + "/" + str(standard))
+        pounds = standard/loadCellData
     except:
         print("".join(i for i in traceback.format_exc()))
 
@@ -83,10 +86,28 @@ def calibrateLoadCell():
 
     print("What would you like to name this calibration?")
     while True:
-        calName = input()
-        if calibrations[calName] is None:
+        calName = input("Enter name:")
+        try:
+            calibrations[calName]
+        except KeyError:
             break
-        print(calName + " already exists please enter a different name.")
+        print(calName + " already exists. Would you like to update it?(Y/N)")
+
+        while True:
+
+            match input("Enter your choice:").upper():
+                case "Y":
+                    breakOuter = 1
+                    break
+                case "N":
+                    print("Enter a different calibration name.")
+                case _:
+                    print("Please enter only Y or N")
+
+        if breakOuter == 1:
+            breakOuter = 0
+            break
+
     calibrations[calName] = pounds
 
     with open("calibrations.yaml", "w") as f:
@@ -105,13 +126,20 @@ def createTestConfig():
 
     print(calibrations)
     print("What load cell will you be using? (The key must be present in the above dictionary)")
-    calibrationName = input()
-    configFile = {"Directory":directory, "CalibrationName":calibrationName}
-    with open("configFile.yaml, "w") as f:
-            yaml.safe_dump(configFile, f, sort_keys = False)
-    
+    while True:
+        calibrationName = input("Enter calibration name:")
+        if calibrationName in calibrations:
+            configFile = {"Directory":directory, "CalibrationName":calibrationName}
+            with open("configFile.yaml", "w") as f:
+                yaml.safe_dump(configFile, f, sort_keys = False)
+            break
+        else:
+            print(calibrations)
+            print("Name must be a key in the above dictionary")
+
+
 #configs UE9 device only written as a function since I needed to catch the exception of the labjack device not being properly closed on a previous run. And needed to close and reopen the port
-def ue9Config():
+def ue9Config(SCAN_FREQUENCY):
     d.getCalibrationData()
     d.streamConfig(NumChannels=1,ChannelNumbers=[0],ChannelOptions=[1],SettlingTime=0,Resolution=13,ScanFrequency=SCAN_FREQUENCY)
 
@@ -128,6 +156,7 @@ def saveExit(a,b):
 
 
 #################################################################################################################################################################################################################
+
 d = ue9.UE9()
 
 #Handles termination signal sent by the onStart code
@@ -137,17 +166,16 @@ signal.signal(signal.SIGINT, saveExit)
 while True:
     print("Enter 0 if you would like to calibrate a load cell and 1 if you would like to create a test config file")
     while True:
-        try:
-            mode = int(input())
-            if mode == 0 || mode == 1:
-                break
-            else:
-                print("Enter only either 0 or 1")
-        except:
+        mode = input("Enter choice:")
+        if mode == "0" or mode == "1":
+            mode = int(mode)
+            break
+        else:
             print("Enter only either 0 or 1")
+
     if mode == 0:
-        calibrateLoadCell()
-    else if mode == 1:
+        calibrateLoadCell(d)
+    elif mode == 1:
         createTestConfig()
     print("Press enter if you would like to do another action or press control C if you are done")
     input()

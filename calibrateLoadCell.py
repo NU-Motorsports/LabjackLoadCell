@@ -9,9 +9,6 @@ import ue9
 def calibrateLoadCell():
     #Device and code set up starts here.
 
-    d = ue9.UE9()
-
-
     # MAX_REQUESTS is the number of packets to be read.
     MAX_REQUESTS = 500
     # SCAN_FREQUENCY is the scan frequency of stream mode in Hz
@@ -131,7 +128,7 @@ def saveExit(a,b):
 
 
 #################################################################################################################################################################################################################
-
+d = ue9.UE9()
 
 #Handles termination signal sent by the onStart code
 signal.signal(signal.SIGTERM, saveExit)

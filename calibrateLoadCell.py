@@ -92,7 +92,7 @@ def calibrateLoadCell():
         print(calName + " already exists please enter a different name.")
     calibrations[calName] = pounds
 
-    with open(calibrations.yaml", "w") as f:
+    with open("calibrations.yaml", "w") as f:
         yaml.safe_dump(calibrations, f, sort_keys=False)
     print("Here is an updated list of calibration keys and values")
     print(calibrations)
@@ -153,4 +153,4 @@ while True:
     else if mode == 1:
         createTestConfig()
     print("Press enter if you would like to do another action or press control C if you are done")
-    
+    input()

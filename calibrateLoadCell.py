@@ -87,8 +87,17 @@ def calibrateLoadCell():
     print("What would you like to name this calibration?")
     while True:
         calName = input()
-    calibrations
+        if calibrations[calName] is None:
+            break
+        print(calName + " already exists please enter a different name.")
+    calibrations[calName] = pounds
+
+    with open(calibrations.yaml", "w") as f:
+        yaml.safe_dump(calibrations, f, sort_keys=False)
+    print("Here is an updated list of calibration keys")
+    print(calibrations)
     
+
 def createTestConfig():
     
     

@@ -80,11 +80,17 @@ def calibrateLoadCell():
         pounds = loadCellData/standard
     except:
         print("".join(i for i in traceback.format_exc()))
-    print("What would you like to name this calibration?")
-    
 
+    with open("calibrations.yaml", "r") as f:
+         calibrations = yaml.safe_load(f) or {}
+
+    print("What would you like to name this calibration?")
+    while True:
+        calName = input()
+    calibrations
+    
 def createTestConfig():
-    zl
+    
     
 #configs UE9 device only written as a function since I needed to catch the exception of the labjack device not being properly closed on a previous run. And needed to close and reopen the port
 def ue9Config():
